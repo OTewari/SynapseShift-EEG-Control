@@ -482,8 +482,16 @@ def start_gui():
         threading.Thread(target=start_collection).start()
 
     def on_train_model():
-        threading.Thread(target=train_model).start()
-        show_model_stats()
+        train_thread = threading.Thread(target=train_model)
+        train_thread.start()
+
+        # Refresh the stats once training has finished (checked from the Tk main loop)
+        def refresh_when_done():
+            if train_thread.is_alive():
+                root.after(500, refresh_when_done)
+            else:
+                show_model_stats()
+        refresh_when_done()
 
     def on_start_eeg():
         global running
