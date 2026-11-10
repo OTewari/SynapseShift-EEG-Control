@@ -204,6 +204,29 @@ def main():
     for r in rows:
         print(f"| {r[0]} | {r[1]:.3f} | {r[2]:.3f} +/- {r[3]:.3f} | {r[4]:.3f} | {r[5]:.3f} ({r[6]:.2f}-{r[7]:.2f}) | {r[8]:.3f} |")
 
+    # Folding "motor" into "none" (no key), as in the final live run-through. This is applied after
+    # prediction to the same out-of-fold predictions; the models are not retrained on 5 classes.
+    none_label = app.ACTION_TO_INDEX["none"]
+
+    def fold_motor(a):
+        a = a.copy()
+        a[a == MOTOR_LABEL] = none_label
+        return a
+
+    def wrong_key_rate(true, pred):
+        """Share of windows where a key is pressed that is not the intended one."""
+        return np.mean((pred != none_label) & (pred != true))
+
+    print("\nKey-press view (stratified 5-fold, out-of-fold predictions):")
+    print("| Model | 6-class accuracy | Wrong-key rate, 6 classes | Accuracy, motor folded into none "
+          "| Wrong-key rate, motor folded into none |")
+    print("|---|---|---|---|---|")
+    for kind, label in (("svm", "SVM (RBF, default C)"), ("mlp", "Keras MLP (20 epochs)")):
+        p = preds[kind]
+        print(f"| {label} | {accuracy_score(y, p):.3f} | {wrong_key_rate(y, p):.3f} "
+              f"| {accuracy_score(fold_motor(y), fold_motor(p)):.3f} "
+              f"| {wrong_key_rate(fold_motor(y), fold_motor(p)):.3f} |")
+
     best = max(("svm", "mlp"), key=lambda k: accuracy_score(y, preds[k]))
     cm = confusion_matrix(y, preds[best], labels=range(len(CLASS_NAMES)))
     print(f"\nOut-of-fold confusion matrix, stratified 5-fold, {best.upper()} (rows = true, cols = predicted):")
