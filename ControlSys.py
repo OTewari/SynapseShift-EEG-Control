@@ -207,7 +207,7 @@ def extract_all_features(raw_data):
     base_features = extract_features(filtered_data)
     # Step 3: Mental load features: frontal theta (4-7 Hz) and alpha (8-12 Hz)
     # Assume channels 0-3 correspond to frontal electrodes (Fp1, F7, Fz, F3)
-    frontal_data = filtered_data[0:6, :]
+    frontal_data = filtered_data[0:4, :]
     f, Pxx = signal.welch(frontal_data, fs=fs, axis=1, nperseg=frontal_data.shape[1])
     theta_power = np.mean(Pxx[:, (f >= 4) & (f < 7)], axis=1)
     alpha_power_frontal = np.mean(Pxx[:, (f >= 8) & (f < 12)], axis=1)
