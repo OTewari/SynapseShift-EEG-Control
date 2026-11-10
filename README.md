@@ -6,6 +6,10 @@ The goal is hands-free control from signals a person can produce on purpose: eye
 
 > **Status: research prototype.** On the included recordings the best model gets **about 58% held-out accuracy across six classes** (chance is 17%). Blink and jaw are reliable; the "none", "motor" and "mental" classes are not (see [Results](#results)). Treat it as a working pipeline, not a finished input device.
 
+## Background
+
+SynapseShift was built for a brain-computer interface course at UC San Diego. According to the author, in the course demo he bound the recognised inputs to keyboard keys and scrolled a short-video feed hands-free; he recalls it as YouTube Shorts. That demo recording is not in this repository.
+
 ## Pipeline
 
 ```mermaid
@@ -33,7 +37,7 @@ Class indices come from the order of `ACTIONS` in `ControlSys.py`. The key mappi
 | 0 | `none` | *(nothing)* | baseline / no command |
 | 1 | `blink` | Down arrow | eye blink |
 | 2 | `jaw` | Up arrow | jaw clench |
-| 3 | `relax` | Space | relaxed state |
+| 3 | `relax` | Space | eyes closed, meditating (alpha rhythm) |
 | 4 | `motor` | Caps Lock | motor (imagery); the CSP filters are fitted for this class vs. the rest |
 | 5 | `mental` | Shift | mental load; the frontal theta/alpha features target this |
 
@@ -137,7 +141,7 @@ Chance level is 0.172, the share of the largest class.
 
 ![Out-of-fold confusion matrix, Keras MLP](docs/confusion_matrix.png)
 
-**Per-class recall (MLP, 5-fold):** blink 0.83, jaw 0.89, relax 0.71, mental 0.45, none 0.32, motor 0.32. Blinks and jaw clenches are large artefacts that are easy to detect. `none`, `motor` and `mental` are mostly confused with each other. The CSP filters are fitted for `motor`, yet `motor` is the class recognised least well.
+**Per-class recall (MLP, 5-fold):** blink 0.83, jaw 0.89, relax 0.71, mental 0.45, none 0.32, motor 0.32. Blinks and jaw clenches are large artefacts that are easy to detect. `none`, `motor` and `mental` are mostly confused with each other. The CSP filters are fitted for `motor`, yet `motor` is the class recognised least well. This matches the author's recollection of the live demo: jaw clench and blink were the most reliable, eyes-closed relax was also strong, and motor was the weakest (here tied with `none` at 0.32).
 
 **Caveats.**
 - All data comes from one subject (the author) and one calibration file, so the numbers say nothing about how well it works for other people.
