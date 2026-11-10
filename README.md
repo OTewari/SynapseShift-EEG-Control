@@ -8,7 +8,7 @@ The goal is hands-free control from signals a person can produce on purpose: eye
 
 ## Background
 
-SynapseShift was built for a brain-computer interface course at UC San Diego. According to the author, in the course demo he bound the recognised inputs to keyboard keys and scrolled a short-video feed hands-free; he recalls it as YouTube Shorts. That demo recording is not in this repository.
+SynapseShift was built for COGS 189, the brain-computer interface course at UC San Diego. According to the author, in the course demo he bound the recognised inputs to keyboard keys and scrolled a short-video feed hands-free; he recalls it as YouTube Shorts. That demo recording is not in this repository.
 
 ## Pipeline
 
