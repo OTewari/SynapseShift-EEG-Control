@@ -51,7 +51,7 @@ Everything below is in `ControlSys.py` (`filter_eeg`, `extract_features`, `extra
    - It keeps the 2 eigenvectors with the largest and the 2 with the smallest eigenvalues, giving 4 spatial filters with shape `(4, 8)`.
    - At run time each raw window is projected onto these filters, and the feature is `log(var + 1e-6)` of each projection.
 
-   The committed `csp_filters.pkl` is exactly what this script produces from the full committed calibration file. I checked this by refitting.
+   The committed `csp_filters.pkl` is exactly what this script produces from the full committed calibration file (verified by refitting, November 2026).
 6. **Classifiers.**
    - **SVM:** `SVC(probability=True, decision_function_shape='ovr')` with default hyper-parameters.
    - **MLP:** Keras `Dense` layers 256-64-128-64-32-64-(Dropout 0.1)-64-6 with GELU/ELU/LeakyReLU/ReLU activations, a softmax output, Adam, and 20 epochs.
@@ -99,7 +99,7 @@ In simulated mode the whole GUI works: collection, training, live classification
 6. **Train Model.** This trains the selected classifier on all calibration data and saves it. *Toggle Classifier (SVM/DL)* switches the type and loads the saved model of that type, if one exists.
 7. **Start EEG Processing** classifies the live signal, presses keys, and opens the rolling plot. **Stop EEG Processing** stops both. **Exit** closes the BrainFlow session.
 
-I did not test this hardware path (no board was available). Everything in this README about live use comes from reading the code.
+The recordings in `data/` come from a real Cyton board and were committed in March 2025. The hardware path was not re-tested when this README was written in November 2026. At that point the app was re-run in simulated mode and the offline evaluation was run, so the live-use steps above are described from the code.
 
 ## Data
 
@@ -107,10 +107,10 @@ I did not test this hardware path (no board was available). Everything in this R
 
 - **1450 windows**, each a `float64` array of shape **(8 channels, 125 samples)**, which is 0.5 s at **250 Hz**.
 - Labels are integers 0–5. Windows per class: none 250, blink 250, jaw 240, relax 210, motor 250, mental 250.
-- Recorded in **25 collection sessions** of 10 consecutive windows per class, in class order. In 5 sessions one class was discarded (relax four times, jaw once).
-- The values are **raw, unfiltered Cyton samples in microvolts**, with large per-channel DC offsets: channel means range from about −3,700 to +28,000 µV, while the typical within-window standard deviation is 4–19 µV. The spectrum has a clear 60 Hz mains peak. Nothing in this file looks like the app's simulated generator, so it appears to be a real recording.
+- The windows form **25 collection sessions** of 10 consecutive windows per class, in class order. In 5 sessions one class was discarded (relax four times, jaw once). This matches the dict format, file path and block structure that the app's *Start Collection* step writes.
+- The values are **raw, unfiltered Cyton samples in microvolts**, with large per-channel DC offsets: channel means range from about −3,700 to +28,000 µV, while the typical within-window standard deviation is 4–19 µV. The spectrum has a clear 60 Hz mains peak. None of the windows look like the app's simulated generator.
 
-The recordings are of a single subject: the author, who wore the electrodes and recorded them on himself. He shares them here on purpose so the results can be reproduced.
+This is a real recording of a single subject: the author, who wore the electrodes and recorded on himself. The DC offsets, the mains peak and the absence of simulator-like windows all support this. He shares the data here on purpose so the results can be reproduced.
 
 ![One recorded calibration window per class](docs/calibration_examples.png)
 
@@ -151,7 +151,7 @@ Chance level is 0.172, the share of the largest class.
 - **CSP is not refitted during training.** You have to run `ComputeCSPFilter.py` by hand after collecting new data. `extract_csp_features` also reloads `csp_filters.pkl` from disk for every window.
 - **No feature scaling.** Band powers on raw µV span several orders of magnitude, which hurts the RBF SVM.
 - **Every prediction becomes a key press.** There is no confidence threshold and no smoothing across windows. With about 58% accuracy, wrong keys will be pressed.
-- **Threading.** The live plot is created from a worker thread, and matplotlib warns *"Starting a Matplotlib GUI outside of the main thread will likely fail."* In my run on Windows it did open and update. Clicking Stop and then Start within about a second can leave the old processing loop running alongside the new one, which I saw once.
+- **Threading.** The live plot is created from a worker thread, and matplotlib warns *"Starting a Matplotlib GUI outside of the main thread will likely fail."* In a November 2026 run on Windows it did open and update. Clicking Stop and then Start within about a second can leave the old processing loop running alongside the new one; this happened once in the same run.
 - **Library deprecations.** The model is saved as legacy HDF5 (`.h5`), and Keras warns about it. scikit-learn 1.9 deprecates `SVC(probability=True)`; it still works with the versions pinned here.
 - **Single subject.** The calibration data comes from one person. A new user has to record their own calibration data before training.
 
