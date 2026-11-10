@@ -13,7 +13,7 @@ I built SynapseShift for COGS 189, the brain-computer interface course at UC San
 For the course demo I used it to scroll and control YouTube Shorts hands-free:
 - jaw clench and blink moved up and down the feed;
 - closing my eyes and relaxing toggled pause/play (Space);
-- mental load was, as far as I remember, bound to mute.
+- mental load was bound to mute.
 
 Mental load was the hardest state to trigger on purpose, so that control was hit-or-miss. The other controls worked close to every time. That figure is from memory of the live run, not a measurement; the offline numbers are lower (see [Results](#results)).
 
