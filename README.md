@@ -110,7 +110,7 @@ I did not test this hardware path (no board was available). Everything in this R
 - Recorded in **25 collection sessions** of 10 consecutive windows per class, in class order. In 5 sessions one class was discarded (relax four times, jaw once).
 - The values are **raw, unfiltered Cyton samples in microvolts**, with large per-channel DC offsets: channel means range from about −3,700 to +28,000 µV, while the typical within-window standard deviation is 4–19 µV. The spectrum has a clear 60 Hz mains peak. Nothing in this file looks like the app's simulated generator, so it appears to be a real recording.
 
-This is raw EEG recorded from a person. The repository does not say who the subject was, or whether there was more than one.
+The recordings are of a single subject: the author, who wore the electrodes and recorded them on himself. He shares them here on purpose so the results can be reproduced.
 
 ![One recorded calibration window per class](docs/calibration_examples.png)
 
@@ -140,7 +140,7 @@ Chance level is 0.172, the share of the largest class.
 **Per-class recall (MLP, 5-fold):** blink 0.83, jaw 0.89, relax 0.71, mental 0.45, none 0.32, motor 0.32. Blinks and jaw clenches are large artefacts that are easy to detect. `none`, `motor` and `mental` are mostly confused with each other. The CSP filters are fitted for `motor`, yet `motor` is the class recognised least well.
 
 **Caveats.**
-- All data is from one calibration file, and the number of subjects is not recorded.
+- All data comes from one subject (the author) and one calibration file, so the numbers say nothing about how well it works for other people.
 - Windows are 0.5 s, so theta (4–7 Hz) and alpha estimates rest on only 2–3 cycles.
 - These are offline window-level accuracies, not closed-loop typing performance.
 
@@ -153,7 +153,7 @@ Chance level is 0.172, the share of the largest class.
 - **Every prediction becomes a key press.** There is no confidence threshold and no smoothing across windows. With about 58% accuracy, wrong keys will be pressed.
 - **Threading.** The live plot is created from a worker thread, and matplotlib warns *"Starting a Matplotlib GUI outside of the main thread will likely fail."* In my run on Windows it did open and update. Clicking Stop and then Start within about a second can leave the old processing loop running alongside the new one, which I saw once.
 - **Library deprecations.** The model is saved as legacy HDF5 (`.h5`), and Keras warns about it. scikit-learn 1.9 deprecates `SVC(probability=True)`; it still works with the versions pinned here.
-- **The calibration data is personal.** `data/calibration_data.pkl` is raw EEG from a person, committed to the public history.
+- **Single subject.** The calibration data comes from one person. A new user has to record their own calibration data before training.
 
 ## Repository layout
 
