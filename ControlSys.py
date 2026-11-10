@@ -511,11 +511,15 @@ def start_gui():
         print(status)
 
     def on_toggle_classifier():
-        global USE_DEEP_LEARNING
+        global USE_DEEP_LEARNING, classifier
         USE_DEEP_LEARNING = not USE_DEEP_LEARNING
         mode = "Deep Learning" if USE_DEEP_LEARNING else "SVM"
         classifier_mode_var.set(mode)
         print(f"Classifier set to {mode}")
+        # The loaded model belongs to the other classifier type; switch to the saved model
+        # of the new type (if one exists) instead of feeding it to the wrong predict path.
+        classifier = None
+        load_model()
 
     # Create GUI buttons
     collection_button = tk.Button(root, text="Start Collection", command=on_start_collection)
